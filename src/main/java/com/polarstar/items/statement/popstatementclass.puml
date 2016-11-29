@@ -1,0 +1,114 @@
+@startuml
+
+FinanceStatement "1" *-- "many" FinanceBillDetailRelation : contains
+FinanceStatement "1" *-- "many" FinanceFeeSettleStatsMysqlQuery : contains
+FinanceBillDetail --> "1" FinanceBillDetailRelation
+FinanceFeeSettleStatsMysqlQuery ..> FeeSumOfOrganization
+
+
+class FinanceBillDetail{
+- long messageId 消息编号
+- long venderId 商家id 结算
+- long orderVenderId 订单商家ID
+- long rfBillId 原始单据ID
+- int rfBillType 原始单据类型
+- Date happenTime 发生时间
+- int feeType 费用类型
+- int serviceFeeType 服务费用类型
+- String feeName 费用名称
+- String unit 计量单位
+- int num 数量
+- int orderStatus 订单状态
+- int direction 支付方向  支付方向1、应收 2、应付
+- BigDecimal bal 金额
+- String remark 备注
+- String formulaData 费用公式数据说明  每笔的费用计算的关键数据和公式说明
+- int synchStatus 同步状态 0. 未同步 1. 同步成功 2. 同步失败
+- Date synchTime 同步时间
+- long createUserid;
+- String createUserCode 操作人用户名
+- Date created 创建时间
+- Date modified 修改时间
+- int orderType 合作方式 0,SOP;  1,FBP;   2,LBP;   3其他 N360  orderType
+- long orderId 订单号
+- String changeDate1 调账时间开始时间
+- String changeDate2 调账时间结束时间
+- long companyId 公司ID
+- String companyName 公司名称
+- long synchId 同步ID
+- String shopName 店铺名称
+- String organId 机构id
+- String orderOrganId 订单机构id ,订单生产六库
+- long statementId 结算单id
+- Date statementBeginTime 结算单开始时间
+- long skuId 商品SKU ID
+- int skuType 商品SKU 类型
+- int wareAmount 商品数量
+- String detailFlag 标识数据；1，为sop 3cod数据
+- String detailDesc 标识描述，为了LOC项目的消费码启用
+- String currency 币种，CNY；USD；HKD
+- long accountId 账户ID
+- int accountType 账户类型
+}
+
+class FinanceStatement{
+- long id 结算单编号
+- long venderId 商家编号
+- int billNum 单据数
+- int period 结算周期
+- int synchStatus 同步状态0. 未同步1. 同步成功 2. 同步失败
+- int colType 合作类型
+- int moved 数据状态
+- int invoiceStatus 发票生成状态
+- int settleType 1-结算单，2-T+1
+- int dataStore 数据存储位置
+- double realCurrency 实结币种
+..
+- double dueFromBal 商家本期应收账款
+- double realFromBal 商家本期实收账款
+- double payBal 商家本期应付账款
+- double realToBal 商家本期实付账款
+- double oughtPayBal 京东应付账款 多币种暂时未启用
+- double realPayBal 京东实付账款 多币种暂时未启用
+}
+
+class FinanceBillDetailRelation{
+- long settleId 结算单编号
+- long detailId 结算单明细编号
+- long venderId 商家编号
+- Date statementBeginTime 结算单开始时间
+- Date created 创建时间
+- Date modified 最后修改时间
+}
+
+class FeeSumOfOrganization{
+- int serviceFeeType 服务费用类型
+- int organId 机构编号
+- double feeSum 费用合计
+- Integer orderStatus 订单状态
+- String currency 币种
+}
+
+class FinanceFeeSettleStatsMysqlQuery{
+- long settleId 结算单编号
+- Date settleDate 结算日期
+- long vendorId 商家编号
+- int feeCode 费用编码
+- String feeName 费用名称
+- int direction 支付方向
+- BigDecimal bal 结算金额
+- String feeDesc 费用描述
+- int colType 合作类型
+- String shopName 店铺名称
+- int organId 机构编号
+- int status 处理状态
+- int orderStatus 订单状态
+- String currency 币种
+- List<FeeSumOfOrganization> statsList 机构费用
+}
+
+
+
+
+
+@enduml

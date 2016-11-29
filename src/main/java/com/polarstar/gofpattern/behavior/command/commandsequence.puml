@@ -1,0 +1,22 @@
+@startuml
+
+title __Simple__ **comand** pattern
+
+autonumber
+
+
+Client --> Recevier: new Recevier()
+activate Client
+
+Client --> ConcreteCommand: new ConcreteCommand(aRecevier)
+Client --> Invoker: new Invoker(aCommand)
+
+Client -> Invoker: call()
+activate Client
+Invoker -> ConcreteCommand : execute()
+|||
+
+ConcreteCommand -> Recevier : action()
+
+
+@enduml

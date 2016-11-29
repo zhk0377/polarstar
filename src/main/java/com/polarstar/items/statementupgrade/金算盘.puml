@@ -1,0 +1,23 @@
+@startuml
+
+!define module(x) class x << (M,#FFAAAA) >>
+!define primary_key(x) <u>x</u>
+hide methods
+hide stereotypes
+
+package 结算 {
+  module(结算查询){
+    + 结算单
+    + 结算明细
+  }
+}
+
+package 资金账户 {
+  module(境外银行){
+  }
+}
+
+package 质保金 {
+}
+
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+
+
+abstract jdbcTempate
+class JdbcTemplateUserImpl
+class Client
+
+jdbcTempate <|-- JdbcTemplateUserImpl
+JdbcTemplateUserImpl <-- Client
+
+class jdbcTempate {
+
+}
+
+@enduml

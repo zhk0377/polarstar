@@ -1,0 +1,19 @@
+@startuml
+
+package user {
+  class user.id <pk>
+  class email <unique>
+  class name <index>
+}
+
+package class {
+  class id
+  class uid "1" - "n" user.id
+}
+
+package cpk {
+  cid - pid: cpk
+}
+
+'http://plantuml.com/preprocessing.html
+@enduml

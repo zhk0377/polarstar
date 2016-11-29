@@ -1,0 +1,26 @@
+@startuml
+
+
+package "factory method pattern" #DDDDDD {
+Factory <|-- ComcreateFactory
+Product<-Client
+Product <|-- ConcreateProduct
+ConcreateProduct <-- ComcreateFactory
+Factory<-Client
+
+
+interface Factory{
++ factoryMethod()
+}
+interface Product
+class ComcreateFactory{
++ factoryMethod()
+}
+
+note bottom : retrun new ConcreateProduct();
+
+class ConcreateProduct
+class Client
+
+}
+@enduml

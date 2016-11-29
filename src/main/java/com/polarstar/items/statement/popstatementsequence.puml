@@ -1,0 +1,87 @@
+@startuml
+
+box "终端用户" #LightYellow
+actor User
+end box
+
+box "POP计费系统" #LightBlue
+participant "FinanceAccStatementService" as FinanceAccStatementService
+participant "FinancePopTaskInterface" as FinancePopTaskInterface
+participant "FinanceDetailSyncWebService"  as FinanceDetailSyncWebService
+participant "FinanceStatementForErpServiceProvider" as FinanceStatementForErpServiceProvider
+participant "FinanceStatementService" as FinanceStatementService
+participant "Statement4ErpWebService" as Statement4ErpWebService
+participant "PayPlatformJmqMessageDeal" as PayPlatformJmqMessageDeal
+participant "FinanceDetailSettleTimeTaskService" as FinanceDetailSettleTimeTaskService
+end box
+
+box "ERP财务结算系统" #LightGreen
+participant "PaySheetService" as PaySheetService
+participant "ErpWsInterface" as ErpWsInterface
+participant "ErpMqInterface" as ErpMqInterface
+participant "ErpAssociateJsfInterface" as ErpAssociateJsfInterface
+participant "POPSettleWSSoap" as POPSettleWSSoap
+end box
+
+
+
+User -> FinanceAccStatementService: settlePeriodByAccService()\n=创建结算单
+activate FinanceAccStatementService
+FinanceAccStatementService --> User:\n=返回创建结果
+
+
+FinancePopTaskInterface -> PaySheetService: executeTask()-->\nbusinessFeeCharge()\n=同步费用明细(任务驱动)
+activate PaySheetService
+
+PaySheetService --> FinancePopTaskInterface: businessFeeCharge()-->\nbusinessFeeCharge()\n=返回同步时间、同步ID(任务驱动) 成功：更新fee_detail表同步时间、同步ID、SYNC_STATUS=1、ERP_DETAIL_ID=synchId、SYNC_TIME=synchTime、MODIFIED = now() 失败：记录错误信息
+activate FinancePopTaskInterface
+
+FinanceAccStatementService -> PaySheetService: synchStatementByAcc()-->\nrequestSettlement()\n=同步结算单(work)
+activate PaySheetService
+
+PaySheetService --> FinanceAccStatementService: requestSettlement()-->\nsynchStatementByAcc()\n=返回同步结果(work) 成功：更新fin_statement表 synch_status=1、status=1、moved=1、synch_time=now()、modified=now() 失败：记录错误信息
+activate FinanceAccStatementService
+
+ErpWsInterface -> FinanceDetailSyncWebService:dsendDetailRelation()\n=逐笔发送关联关系(WS) 接收关联关系、校验关联关系（校验结算明细是否能关联到结算单、账户是否一致）\n增加结算关联处理任务插入fin_detail_synch待关联状态记录synch_status=1【同步完成/待关联】、插入结算关联关系SYNC_STATUS=2【关联完成/待迁移结算明细分区表】、statement_id=statementId、增加计费明细迁移缓冲队列
+activate FinanceDetailSyncWebService
+
+FinanceDetailSyncWebService --> ErpWsInterface:sendDetailRelation()\n=返回关联结果
+activate ErpWsInterface
+
+FinanceDetailSettleTimeTaskService -> FinanceDetailSettleTimeTaskService:migrateBillDetail()\n=明细从fee_detail迁移到bill_detail\n发送计费回执消息已入账\n明细迁移到分区（回填索引表的计算开始时间）\n迁移到fin_bill_detail\n删除fin_fee_detail数据\n更新迁移状态synch_status=5【迁移结算明细分区表完成/待结算费用统计处理】\n添加结算明细到结算统计处理队列
+activate FinanceDetailSettleTimeTaskService
+
+FinanceDetailSettleTimeTaskService -> FinanceDetailSettleTimeTaskService:detailSettleStats()\n=明细费用统计\n明细统计数据插入fin_settle_stats表\n更新synch_status=4【明细费用统计完成/待结算行转列处理】
+activate FinanceDetailSettleTimeTaskService
+
+FinanceDetailSettleTimeTaskService -> FinanceDetailSettleTimeTaskService:detailSettleRowConvert()\n=费用行转列处理（现在已经不进行行转列操作）\n更新synch_status=3【结算行转列完成】
+activate FinanceDetailSettleTimeTaskService
+
+ErpWsInterface -> FinanceDetailSyncWebService:sendStatementVerifyData()\n=账期结束发送校验数据(WS)、关联数据存储到mongodb
+activate FinanceDetailSyncWebService
+
+FinanceStatementForErpServiceProvider --> ErpAssociateJsfInterface:\n=返回校验结果和消息内容
+activate ErpWsInterface
+
+ErpAssociateJsfInterface -> FinanceStatementForErpServiceProvider: updateStatement(StatementInfoMO)\n=更新本期应收、应付、应结信息等信息(JSF)
+activate FinanceStatementForErpServiceProvider
+
+FinanceStatementForErpServiceProvider --> ErpAssociateJsfInterface: \n=返回更新结果和消息内容
+activate FinanceStatementForErpServiceProvider
+
+FinanceStatementService -> POPSettleWSSoap: syncConfirmedStatement()-->\nsupplierConfirm()\n=同步已确认的结算单，只是同步了一个审批流的状态(WS)
+activate POPSettleWSSoap
+
+POPSettleWSSoap --> FinanceStatementService: supplierConfirm()-->sendConfirmedErpStatement()\n=返回同步结果，如果是true，修改fin_statement的synch_status=2、synch_time=now()
+activate POPSettleWSSoap
+
+ErpWsInterface ->Statement4ErpWebService: updateStatementStatus()\n=财务审批流状态改变通知POP计费系统
+activate Statement4ErpWebService
+
+Statement4ErpWebService --> ErpWsInterface: \n=返回更新结果和消息内容
+
+ErpMqInterface ->PayPlatformJmqMessageDeal: onMessage()\n=接收收付款单状态
+activate PayPlatformJmqMessageDeal
+
+
+@enduml

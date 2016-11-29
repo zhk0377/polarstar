@@ -1,0 +1,29 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <bean id="waiterTarget" class="com.polarstar.pattern.aop.Waiter"/>
+
+    <bean id="dynamicAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+        <property name="pointcut">
+            <bean class="com.polarstar.pattern.aop.GreetingDynamicPointcut"/>
+        </property>
+        <property name="advice">
+            <bean class="com.polarstar.pattern.aop.GreetingBeforeAdvice"/>
+        </property>
+    </bean>
+
+    <bean id="waiter2" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target">
+            <ref local="waiterTarget"/>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>dynamicAdvisor</value>
+            </list>
+        </property>
+        <property name="proxyTargetClass" value="true"/>
+    </bean>
+
+</beans>

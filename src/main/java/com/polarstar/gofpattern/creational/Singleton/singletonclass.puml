@@ -1,0 +1,15 @@
+@startuml
+
+
+package "singleton pattern" #DDDDDD {
+class Singleton  << (S,#FF7700) Singleton >> {
+- Singleton instance
+- Singleton()
++ getInstance()
+}
+}
+
+note bottom : return a uniqueintance
+Singleton o-- Singleton
+
+@enduml

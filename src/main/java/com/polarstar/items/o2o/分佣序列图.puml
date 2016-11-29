@@ -1,0 +1,23 @@
+@startuml
+
+box "POP结算中心" #LightBlue
+participant "FinanceSupplyStatementService" as FinanceSupplyStatementService
+participant "financeSupplyStatementManager" as financeSupplyStatementManager
+end box
+
+box "POP收付费系统" #LightGreen
+participant "FinSupStatementPaymentServiceProvider" as FinSupStatementPaymentServiceProvider
+end box
+
+
+FinanceSupplyStatementService -> FinSupStatementPaymentServiceProvider:调用syncSupplyStatementToPayment\n同步收付费结算明细
+activate FinSupStatementPaymentServiceProvider
+
+FinanceSupplyStatementService <-- FinSupStatementPaymentServiceProvider: 返回同步结果
+activate FinanceSupplyStatementService
+
+FinanceSupplyStatementService -> financeSupplyStatementManager:调用doTransactionUpdateSupplyStatementSyncStatus\n更新对应结算单
+activate FinSupStatementPaymentServiceProvider
+
+
+@enduml

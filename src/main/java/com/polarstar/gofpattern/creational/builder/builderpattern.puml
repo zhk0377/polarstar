@@ -1,0 +1,26 @@
+@startuml
+
+
+Builder <|-- ConcreteBuilder
+Product <.. ConcreteBuilder
+Director o--> Builder
+Director <-- Client
+
+interface Builder{
++ buildPart()
+}
+interface Product
+class ConcreteBuilder{
++ buildPart()
++ getResult()
+}
+class Director{
++ construct()
+}
+
+note bottom : for all objects in structure
+
+class Client
+
+
+@enduml

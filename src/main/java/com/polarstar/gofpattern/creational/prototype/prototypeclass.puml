@@ -1,0 +1,30 @@
+@startuml
+
+
+Prototype <.Client
+Prototype <|-- ConcreatePrototypeA
+Prototype <|-- ConcreatePrototypeB
+
+class Client{
++ operation()
+}
+
+note bottom : p = protorype.clone();
+
+
+note "retrun copy of self" as N2
+ConcreatePrototypeA .. N2
+N2 .. ConcreatePrototypeB
+
+class ConcreatePrototypeA{
++clone() : Prototype
+}
+
+class ConcreatePrototypeB{
++clone() : Prototype
+}
+interface Prototype{
+
+}
+
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+salt
+{
+{T
++ **O2O分佣业务流 **
+
++++++ 1. 调用POP计费结算系统盘算此商家是否开通T+1和已绑定网银钱包
++++++ 1.如果绑定网银钱包，则可以开通给导购员的分佣功能【FinanceAccountServiceProvider.verifyT1AndJdpay】 zhangxuegang
++++++ 2. 门店帮验证商家已经开通T+1和已经绑定网银钱包后，商家点击启用按钮，然后出现分佣电子协议，商家点击同意
++++++ 2.同步电子协议到POP计费结算系统【SettleProtocolServiceProvider.insertSettleProtocol】 yanghuai
++++++ 3. 门店帮进入我的佣金菜单进行网银钱包账号绑定，门店帮调用POP计费结算系统查看账号实名认证信息。【FinanceJdPayPayeeServiceProvider.bingJdPayCard】
++++++ 4. 网银钱包资金账户表中增加资金账号类别，1为对公账号，2为对私账号，修改原入驻授权逻辑注册账号为对公账号，新导购员自动生成资金账号为对私账号
++++++ 5. 进行网银收付款指令操作，判断分账目标账户类别，如果是对私的账户，调用网银钱包对私接口
+
+}
+}
+@enduml
