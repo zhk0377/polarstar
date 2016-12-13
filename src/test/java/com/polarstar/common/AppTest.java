@@ -50,6 +50,8 @@ public class AppTest extends TestCase {
     }
 
     public void testAraysAsList() {
+        int a = 1;
+        System.out.println(-a);
 
     }
 
