@@ -3,14 +3,14 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-    <bean id="waiterTarget" class="com.polarstar.pattern.aop.Waiter"/>
+    <bean id="waiterTarget" class="com.polarstar.pattern.gofpattern.Waiter"/>
 
     <bean id="dynamicAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
         <property name="pointcut">
-            <bean class="com.polarstar.pattern.aop.GreetingDynamicPointcut"/>
+            <bean class="com.polarstar.pattern.gofpattern.GreetingDynamicPointcut"/>
         </property>
         <property name="advice">
-            <bean class="com.polarstar.pattern.aop.GreetingBeforeAdvice"/>
+            <bean class="com.polarstar.pattern.gofpattern.GreetingBeforeAdvice"/>
         </property>
     </bean>
 

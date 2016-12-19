@@ -1,4 +1,4 @@
-package com.polarstar.pattern.aop;
+package com.polarstar.pattern.gofpattern;
 
 import org.junit.Test;
 
@@ -6,7 +6,7 @@ import org.junit.Test;
 /**
  * Created by zhangxuegang on 2016/12/2.
  */
-public class GreetingBeforeAdviceTest {
+public class BeforeAdviceTest {
     @Test
     public void before() throws Exception {
 
