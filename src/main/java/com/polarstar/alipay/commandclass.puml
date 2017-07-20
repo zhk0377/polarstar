@@ -1,0 +1,120 @@
+@startuml
+
+'UML类图的关联关系
+'泛化关系 extends
+'实现关系 implement
+'依赖关系 单向，类A使用了类B
+'关联关系 使一个类知道另一个类的属性和方法
+'关联又细化为【聚合和组合】
+’依赖关联的强弱关系：组合>聚合>关联>依赖
+
+package "阿里收单体系" #DDDDDD {
+
+AlipayClient <|-- DefaultAlipayClient
+
+AlipayObject <|-- GoodsDetail
+AlipayObject <|-- RoyaltyDetailInfos
+AlipayObject <|-- RoyaltyInfo
+AlipayObject <|-- AlipayTradeCreateModel
+AlipayObject <|-- ExtendParams
+AlipayObject <|-- SubMerchant
+
+RoyaltyInfo --> RoyaltyDetailInfos
+
+AlipayTradeCreateModel --> GoodsDetail
+AlipayTradeCreateModel --> ExtendParams
+AlipayTradeCreateModel --> RoyaltyInfo
+AlipayTradeCreateModel --> SubMerchant
+
+DefaultAlipayClient --> AlipayTradeCreateModel
+
+}
+
+interface AlipayClient {
+'抽象与静态{abstract} 定义可访问性 + - # ~
+'+ {abstract} execute()'
+}
+
+abstract AlipayObject {
+}
+
+class DefaultAlipayClient {
+- String app_id
+- String method
+- String format
+- String charset
+- String sign_type
+- String sign
+- String timestamp
+- String version
+- String notify_url
+- String app_auth_token
+- String biz_content
+- AlipayTradeCreateModel alipayTradeCreateModel
+}
+
+
+class GoodsDetail {
+'商品列表信息'
+- String alipayGoodsId;
+- String body;
+- String goodsCategory;
+- String goodsId;
+- String goodsName;
+- String price;
+- Long quantity;
+- String showUrl;
+}
+
+class RoyaltyDetailInfos {
+- Long amount;
+- String amountPercentage;
+- String batchNo;
+- String desc;
+- String outRelationId;
+- Long serialNo;
+- String transIn;
+- String transInType;
+- String transOut;
+- String transOutType;
+}
+
+class RoyaltyInfo {
+- List<RoyaltyDetailInfos> royaltyDetailInfos;
+- String royaltyType;
+}
+
+class AlipayTradeCreateModel {
+- String alipayStoreId;
+- String body;
+- String buyerId;
+- String buyerLogonId;
+- String disablePayChannels;
+- String discountableAmount;
+- String enablePayChannels;
+- ExtendParams extendParams;
+- List<GoodsDetail> goodsDetail;
+- String merchantOrderNo;
+- String operatorId;
+- String outTradeNo;
+- RoyaltyInfo royaltyInfo;
+- String sellerId;
+- String storeId;
+- SubMerchant subMerchant;
+- String subject;
+- String terminalId;
+- String timeoutExpress;
+- String totalAmount;
+- String undiscountableAmount;
+}
+
+class ExtendParams {
+- String hbFqNum;
+- String hbFqSellerPercent;
+- String sysServiceProviderId;
+}
+
+class SubMerchant {
+- String merchantId;
+}
+@enduml

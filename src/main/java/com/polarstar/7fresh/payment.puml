@@ -1,0 +1,58 @@
+@startuml
+
+class FinPaymentApply
+class FinPaymentAccounts
+class FinAccountBalance
+
+class FinPaymentApply {
+  - Long id;//主键
+  - Integer type;//付款单类型(收/付/预付)
+  - Integer rfSourceId;//触发的来源系统(结算系统、man端、其他业务系统)
+  - Integer rfBillType;//触发的来源的业务类型(结算单、接口、人工)
+  - String rfBillId;//触发的来源的业务单据标识
+  - Long venderId;//商家标识
+  - Long toVenderId;//目的商家标识
+  - Long accountId;//结算账户标识
+  - Long toAccountId;//目标账户标识
+  - String applicantErpId;//申请人
+  - String applicantName;//申请人名称
+  - Double amount;//付款的金额
+  - String currency;//币种：cny 人民币,usd 美元
+  - String remark;//备注信息
+  - Datetime created;//创建时间
+}
+
+class FinPaymentAccounts {
+- Long id;//主键
+- Integer type;//付款单类型(收/付/预付)
+- Long venderId;//商家标识
+- Long accountId;//结算账户标识
+- Datetime happenTime;//发生时间
+- String applicantErpid;//申请人erp编号
+- String applicantName;//申请人名称
+- Double beginAmount;//期初余额
+- Double amount;//付款的金额
+- Double endAmount;//期末余额
+- String currency;//币种：cny 人民币,usd 美元
+- Integer rfSourceId;//触发的来源系统(结算系统、man端、其他业务系统)
+- Integer rfNillType;//触发的来源的业务类型(结算单、接口、人工)
+- String rfBillId;//触发的来源的业务单据标识
+- String remark;//备注信息
+- Integer status;//状态: 1 预支 2 成功 3 失败
+- Datetime created;//创建时间
+- Datetime MODIFIED;//修改时间
+}
+
+class FinAccountBalance {
+- Long id;//主键
+- Integer type;//预付款、质保金
+- Long venderId;//商家标识
+- Long accountId;//结算账户标识
+- Double currentAmount;//当前余额
+- Double availableBalance;//可用余额
+- String currency;//币种：cny 人民币,usd 美元
+- String remark;//备注信息
+- Integer status;//
+- Datetime created;//创建时间
+}
+@enduml
